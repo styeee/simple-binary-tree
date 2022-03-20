@@ -1,29 +1,58 @@
 #include <iostream>
 using namespace std;
-#include <map>
 #include <string.h>
 
+ template<typename type=int>
 class tree
 {
     struct node
     {
         const char*key=0;
-        int value;
+        type value;
         node*left;
         node*right;
+
+        node&operator,(const bool b)
+        {if(b)return*right;return*left;}
+        
+        ~node()
+        {
+            if(!key)return;
+            delete left;
+            delete right;
+            //cout<<key<<" was deleted"<<endl;
+        }
+        
+        void out(int a)
+        {
+            if(!key)return;
+            cout<<a<<'\t'<<key<<':'<<value<<endl;
+            a=abs(a)+1;
+            left->out(-a);
+            right->out(a);
+        }
     };
     
     size_t size=0;
-    node*root=new node;
 public:
+    node*root=new node;
+    
+    ~tree()
+    {delete root;}
 
-    void operator()(const char*k,int v)
+    node&operator*()
+    {return*root;}
+
+    bool operator()(const char*k,int v)
     {
         node*cur=root;
         
         while(cur->key)
         {
-            if(strcmp(cur->key,k)>0)
+            const char c=strcmp(cur->key,k);
+            if(!c)return false;
+            
+            if(c>0)
                 cur=cur->left;
             else
                 cur=cur->right;
@@ -34,9 +63,11 @@ public:
         cur->left=new node;
         cur->right=new node;
         size++;
+        
+        return true;
     }
     
-    const int operator[](const char*k)
+    const type operator[](const char*k)
     {
         node*cur=root;
         
@@ -53,19 +84,38 @@ public:
         return cur->value;
     }
     
+    operator size_t()
+    {return size;}
+    
     operator bool()
-    {
-        return root->key;
-    }
+    {return root->key;}
+    
+    inline void out()
+    {root->out(0);}
 };
 
 int main()
 {
-    tree t;
-    t("text",2);
-    t("da",20);
+    tree<>t;
     
-    cout<<t["da"];
+    t("f",1);
+    
+    t("e",2);
+    t("g",3);
+    
+    t("c",4);
+    t("d",5);
+    t("h",6);
+    t("i",7);
+    
+    t("a",8);
+    t("b",9);
+    t("j",10);
+    t("k",11);
+    t("l",12);
+    
+    t.out();
+    cout<<(*t,0,0,0).key;
     
     return 0;
 }
