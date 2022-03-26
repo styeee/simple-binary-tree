@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 using namespace std;
 #include <string.h>
@@ -20,6 +22,7 @@ class tree
             if(!key)return;
             delete left;
             delete right;
+            delete[]key;
             //cout<<key<<" was deleted"<<endl;
         }
         
@@ -43,14 +46,14 @@ public:
     node&operator*()
     {return*root;}
 
-    bool operator()(const char*k,int v)
+    const type operator()(const char*k,const type v)
     {
         node*cur=root;
         
         while(cur->key)
         {
             const char c=strcmp(cur->key,k);
-            if(!c)return false;
+            if(!c)return 0;
             
             if(c>0)
                 cur=cur->left;
@@ -58,19 +61,25 @@ public:
                 cur=cur->right;
         }
         
-        cur->key=k;
+        size_t l=strlen(k);
+        char*temp=new char[l+1];
+        strcpy(temp,k);temp[l]=0;
+
+        cur->key=temp;
         cur->value=v;
         cur->left=new node;
         cur->right=new node;
         size++;
         
-        return true;
+        return cur->value;
     }
     
     const type operator[](const char*k)
     {
         node*cur=root;
         
+        if(!cur->key)return 0;//exeption
+
         for(char i=strcmp(cur->key,k);i;)
         {
             if(i>0)
@@ -83,39 +92,15 @@ public:
         
         return cur->value;
     }
+    inline const type operator[](char*k)
+    {operator[]((const char*)k);}
     
-    operator size_t()
+    operator size_t()const
     {return size;}
     
-    operator bool()
+    operator bool()const
     {return root->key;}
     
-    inline void out()
+    inline void out()const
     {root->out(0);}
 };
-
-int main()
-{
-    tree<>t;
-    
-    t("f",1);
-    
-    t("e",2);
-    t("g",3);
-    
-    t("c",4);
-    t("d",5);
-    t("h",6);
-    t("i",7);
-    
-    t("a",8);
-    t("b",9);
-    t("j",10);
-    t("k",11);
-    t("l",12);
-    
-    t.out();
-    cout<<(*t,0,0,0).key;
-    
-    return 0;
-}
